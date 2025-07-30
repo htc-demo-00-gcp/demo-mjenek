@@ -17,7 +17,7 @@ spec:
       serviceAccountName: {{ .Values.serviceAccount }}
       containers:
       - name: {{ .Chart.Name }}
-        image: {{ .Values.image.repository }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy}}
         env:
         - name: REACT_APP_BUCKET_NAME
