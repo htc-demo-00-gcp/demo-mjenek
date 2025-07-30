@@ -49,7 +49,7 @@ jobs:
           --push .
 
       - name: Deploy application
-        run: ./canyon deploy $REPOSITORY PR-$PULL_REQUEST_NUMBER ./manifest.yaml --no-prompt --output values.yaml
+        run: ./canyon deploy $REPOSITORY ephemeral-pr-$PULL_REQUEST_NUMBER ./manifest.yaml --no-prompt --output values.yaml
 
       - name: Set up Python (for parsing YAML)
         uses: actions/setup-python@v4
@@ -86,3 +86,23 @@ jobs:
             --set queue.name=${{ steps.parse_yaml.outputs.queue-name }} \
             --set serviceAccount=${{ steps.parse_yaml.outputs.service-account }} \
             --namespace=${{ steps.parse_yaml.outputs.namespace }}
+
+      - name: Wait for LoadBalancer IP
+        run: |
+          echo "Waiting for LoadBalancer IP..."
+          for i in {1..30}; do
+            IP=$(kubectl get svc hello-world-hello-world -n ${{ steps.parse_yaml.outputs.namespace }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+            if [ -n "$IP" ]; then
+              echo "Service is available at IP: $IP"
+              echo "APP_IP=$IP" >> $GITHUB_ENV
+              break
+            fi
+            echo "Still waiting..."
+            sleep 10
+          done
+
+      - name: Print Application IP
+        run: echo "Application is available at http://${{ env.APP_IP }}"
+
+      - name: Print Humanitec URL
+        run: echo "Humanitec application is available at $CANYON_API_URL/orgs/$CANYON_ORG/projects/$REPOSITORY/envs/ephemeral-pr-$PULL_REQUEST_NUMBER/status"

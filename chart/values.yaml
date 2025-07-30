@@ -1,7 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: europe-west3-docker.pkg.dev/htc-demo-00-gcp/humanitec/app:latest
+  repository: europe-west3-docker.pkg.dev/htc-demo-00-gcp/humanitec/app
+  tag: latest
   pullPolicy: IfNotPresent
 
 service: 

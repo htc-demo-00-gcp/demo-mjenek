@@ -103,3 +103,6 @@ jobs:
 
       - name: Print Application IP
         run: echo "Application is available at http://${{ env.APP_IP }}"
+
+      - name: Print Humanitec URL
+        run: echo "Humanitec application is available at $CANYON_API_URL/orgs/$CANYON_ORG/projects/$REPOSITORY/envs/default/status"
